@@ -13,6 +13,7 @@
 extern lv_indev_t * indev_keypad;
 LV_IMG_DECLARE(image_scen);
 LV_IMG_DECLARE(CSGO);
+LV_IMG_DECLARE(main_img);
 
 static void btn_cb(lv_obj_t * obj,lv_event_t event);
 lv_task_t* task1 = NULL;
@@ -30,7 +31,7 @@ void lv_demo_benchmark(void)
     lv_obj_t *scr = lv_scr_act();//获取当前活跃的屏幕对象
 
 	img = lv_img_create(scr,NULL);
-	lv_img_set_src(img,&image_scen);
+	lv_img_set_src(img,&main_img);
 
     lv_obj_t * btn = lv_btn_create(scr,NULL);
     lv_obj_set_size(btn, 50,20);
@@ -52,9 +53,12 @@ void lv_demo_benchmark(void)
 
 static void btn_cb(lv_obj_t * obj,lv_event_t event)
 {
-	
+	static int i = 0;
     if(event == LV_EVENT_CLICKED)
     {
-        lv_img_set_src(img,&CSGO);
+		if(i++%2 == 0)
+			lv_img_set_src(img,&CSGO);
+		else
+			lv_img_set_src(img,&image_scen);
     }
 }

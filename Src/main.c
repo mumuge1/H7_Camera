@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "rtc.h"
+#include "sdmmc.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -27,67 +28,18 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd.h"
 #include "lvgl.h"
 #include "lv_port_disp_template.h"
 #include "lv_port_indev_template.h"
-#include "lv_conf.h"
 #include "lv_demo_benchmark.h"
+#include "w25qxx.h"
+#include <stdio.h>
+#include "fatfs-demo.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-/*
-*********************************************************************************************************
-*	函 数 名: fputc
-*	功能说明: 重定义putc函数，这样可以使用printf函数从串口1打印输出
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-int fputc(int ch, FILE *f)
-{
-#if 0	/* 将需要printf的字符通过串口中断FIFO发送出去，printf函数会立即返回 */
-	comSendChar(COM1, ch);
-	
-	return ch;
-#else	/* 采用阻塞方式发送每个字符,等待数据发送完毕 */
-	/* 写一个字节到USART1 */
-	USART1->TDR = ch;
-	
-	/* 等待发送结束 */
-	while((USART1->ISR & USART_ISR_TC) == 0)
-	{}
-	
-	return ch;
-#endif
-}
 
-/*
-*********************************************************************************************************
-*	函 数 名: fgetc
-*	功能说明: 重定义getc函数，这样可以使用getchar函数从串口1输入数据
-*	形    参: 无
-*	返 回 值: 无
-*********************************************************************************************************
-*/
-//int fgetc(FILE *f)
-//{
-
-//#if 1	/* 从串口接收FIFO中取1个数据, 只有取到数据才返回 */
-//	uint8_t ucData;
-
-//	while(comGetChar(COM1, &ucData) == 0);
-
-//	return ucData;
-//#else
-//	/* 等待接收到数据 */
-//	while((USART1->ISR & USART_ISR_RXNE) == 0)
-//	{}
-
-//	return (int)USART1->RDR;
-//#endif
-//}
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -161,7 +113,7 @@ static void CPU_CACHE_Enable(void)
   SCB_EnableDCache();
 }
 
-
+	HAL_SD_CardInfoTypeDef pCardInfo;	
 /* USER CODE END 0 */
 
 /**
@@ -202,14 +154,30 @@ int main(void)
   MX_SPI4_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
+  MX_SPI1_Init();
+  MX_SDMMC1_SD_Init();
   /* USER CODE BEGIN 2 */
-//	HAL_TIMEx_PWMN_Start(&htim1,TIM_CHANNEL_2);
-//	__HAL_TIM_SetCompare(&htim1,TIM_CHANNEL_2,10);
+    //W25Qx_Init();
 	lv_init();
 	lv_port_disp_init();
 	lv_port_indev_init();
 	lv_demo_benchmark();
-	//printf("GO!");
+    fatfs_test();
+	SD_fatfs();
+	miscellaneous();
+	file_check();
+	
+//	HAL_SD_GetCardInfo(&hsd1, &pCardInfo);
+//	printf("block_num:%d,block_size:%d\n\n",pCardInfo.LogBlockNbr - 1,pCardInfo.LogBlockSize);
+//	uint8_t write_buf[] = "qwertyuiop,asdfghjkl,zxcvbnm";
+//	uint8_t read_buf[512];
+//	if(HAL_SD_WriteBlocks(&hsd1,write_buf,0,1,0xffff)!= HAL_OK)
+//		printf("write error!\n");
+//	while (HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER);
+//	if(HAL_SD_ReadBlocks(&hsd1,read_buf,0,1,0xffff) != HAL_OK)
+//		printf("read error!\n");
+//	while (HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER);
+//	printf("DATA:%s",read_buf);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -221,7 +189,6 @@ int main(void)
     /* USER CODE BEGIN 3 */
 
 		lv_task_handler();
-		HAL_Delay(5);
 		
   }
   /* USER CODE END 3 */
@@ -245,22 +212,21 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
-  /** Configure LSE Drive Capability
+  /** Macro to configure the PLL clock source
   */
-  HAL_PWR_EnableBkUpAccess();
-  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
+  __HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_HSE);
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 5;
   RCC_OscInitStruct.PLL.PLLN = 96;
   RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 5;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
@@ -287,10 +253,21 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
-                              |RCC_PERIPHCLK_SPI4;
+                              |RCC_PERIPHCLK_SPI4|RCC_PERIPHCLK_SPI1
+                              |RCC_PERIPHCLK_SDMMC;
+  PeriphClkInitStruct.PLL2.PLL2M = 2;
+  PeriphClkInitStruct.PLL2.PLL2N = 12;
+  PeriphClkInitStruct.PLL2.PLL2P = 2;
+  PeriphClkInitStruct.PLL2.PLL2Q = 2;
+  PeriphClkInitStruct.PLL2.PLL2R = 1;
+  PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
+  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOMEDIUM;
+  PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+  PeriphClkInitStruct.SdmmcClockSelection = RCC_SDMMCCLKSOURCE_PLL2;
+  PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
   PeriphClkInitStruct.Spi45ClockSelection = RCC_SPI45CLKSOURCE_D2PCLK1;
   PeriphClkInitStruct.Usart16ClockSelection = RCC_USART16CLKSOURCE_D2PCLK2;
-  PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+  PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();

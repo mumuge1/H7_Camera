@@ -115,7 +115,20 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+#include <stdio.h>
+int fputc(int ch, FILE *f)
+{
+	USART1->TDR = ch;
+	while((USART1->ISR & USART_ISR_TC) == 0);
+	return ch;
+}
 
+int fgetc(FILE *f)
+{
+    uint8_t  ch;
+	HAL_UART_Receive(&huart1,(uint8_t *)&ch, 1, 0xFFFF);
+	return  ch;
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
