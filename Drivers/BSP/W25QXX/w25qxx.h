@@ -146,7 +146,9 @@ uint8_t W25Qx_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
 uint8_t W25Qx_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
 uint8_t W25Qx_Erase_Block(uint32_t Address);
 uint8_t W25Qx_Erase_Chip(void);
-
+uint32_t FS_W25Qx_Write(uint8_t* pBuffer,uint32_t WriteAddr,uint32_t NumByteToWrite);
+uint32_t FS_W25Qx_Read(uint8_t* pBuffer,uint32_t ReadAddr,uint32_t NumByteToRead);
+void W25QXX_Write(uint8_t* pBuffer,uint32_t WriteAddr,uint16_t NumByteToWrite);
 uint8_t W25Qx_Get_Parameter(W25Qx_Parameter *Para);
 /**
   * @}

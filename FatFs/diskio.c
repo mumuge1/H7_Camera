@@ -81,11 +81,16 @@ DRESULT disk_read (
 	case DEV_FLASH :
 		// translate the arguments here
         sector+=SECTOR_OFFSET;
-		res = W25Qx_Read(buff, sector<<12, count<<12);
+		for(;count>0;count--)
+			{
+				res+=W25Qx_Read(buff,sector<<12,4096);
+				sector++;
+				buff+=512;
+			}
 
 		// translate the reslut code here
 
-		return res;
+		return RES_OK;
 	}
 
 	return res;
@@ -117,12 +122,14 @@ DRESULT disk_write (
 			return RES_OK;
 
 	case DEV_FLASH :
-		// translate the arguments here
-        sector+=SECTOR_OFFSET;
-        W25Qx_Erase_Block(sector<<12);
-		res = W25Qx_Write((uint8_t *)buff, sector<<12, count<<12);
-		// translate the reslut code here
-
+		for(;count>0;count--)
+			{										    
+				W25QXX_Write((uint8_t*)buff,sector<<12,4096);
+				sector++;
+				buff+=512;
+			}
+			res=0;
+		
 		return res;
 	}
 
@@ -156,10 +163,10 @@ DRESULT disk_ioctl (
                 *(DWORD *) buff = CardInfo.LogBlockNbr;
                 status = RES_OK;break;
             case GET_SECTOR_SIZE :
-                *(WORD *) buff = CardInfo.LogBlockSize;
+                *(WORD *) buff = 512;
                 status = RES_OK;break;
             case GET_BLOCK_SIZE  :
-                *(DWORD *) buff = CardInfo.LogBlockSize / 512;
+                *(DWORD *) buff = CardInfo.LogBlockSize;
 				status = RES_OK;break;
 		}
 	case DEV_FLASH :
@@ -167,13 +174,13 @@ DRESULT disk_ioctl (
 		// Process of the command for the MMC/SD card
         switch(cmd) {
             case GET_SECTOR_COUNT:
-                *(DWORD *) buff = 4096 - SECTOR_OFFSET;
+                *(DWORD *) buff = 2048;
                 break;
             case GET_SECTOR_SIZE :
                 *(WORD *) buff = 4096;
                 break;
             case GET_BLOCK_SIZE  :
-                *(DWORD *) buff = 1;
+                *(DWORD *) buff = 8;
                 break;
         }
         status = RES_OK;break;

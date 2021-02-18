@@ -112,8 +112,7 @@ static void CPU_CACHE_Enable(void)
   /* Enable D-Cache */
   SCB_EnableDCache();
 }
-
-	HAL_SD_CardInfoTypeDef pCardInfo;	
+	
 /* USER CODE END 0 */
 
 /**
@@ -157,27 +156,25 @@ int main(void)
   MX_SPI1_Init();
   MX_SDMMC1_SD_Init();
   /* USER CODE BEGIN 2 */
-    //W25Qx_Init();
+  
+	//Font2SD();
+    //Read_Font_From_SD();
+//	Font2FALSH();
+//	Read_Font_From_FLASH();
+//	W25Qx_Init();
+//	printf("²Á³ý:%d\r\n",W25Qx_Erase_Chip());
 	lv_init();
 	lv_port_disp_init();
 	lv_port_indev_init();
 	lv_demo_benchmark();
-    fatfs_test();
-	SD_fatfs();
-	miscellaneous();
-	file_check();
-	
-//	HAL_SD_GetCardInfo(&hsd1, &pCardInfo);
-//	printf("block_num:%d,block_size:%d\n\n",pCardInfo.LogBlockNbr - 1,pCardInfo.LogBlockSize);
-//	uint8_t write_buf[] = "qwertyuiop,asdfghjkl,zxcvbnm";
-//	uint8_t read_buf[512];
-//	if(HAL_SD_WriteBlocks(&hsd1,write_buf,0,1,0xffff)!= HAL_OK)
-//		printf("write error!\n");
-//	while (HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER);
-//	if(HAL_SD_ReadBlocks(&hsd1,read_buf,0,1,0xffff) != HAL_OK)
-//		printf("read error!\n");
-//	while (HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER);
-//	printf("DATA:%s",read_buf);
+	//Font2SD();
+//	test();
+	test1();
+//  SD_fatfs();
+//    fatfs_test();
+//	miscellaneous();
+//	file_check();
+	//scan_files("1:");
   /* USER CODE END 2 */
 
   /* Infinite loop */

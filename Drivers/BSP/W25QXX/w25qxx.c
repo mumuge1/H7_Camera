@@ -8,6 +8,7 @@ W25Qx_Parameter W25Qx_Para;
   * @brief  Initializes the W25QXXXX interface.
   * @retval None
   */
+
 uint8_t W25Qx_Init(void)
 { 
 	uint8_t state;
@@ -15,7 +16,6 @@ uint8_t W25Qx_Init(void)
 	W25Qx_Reset();
 	delay(5);
 	state = W25Qx_Get_Parameter(&W25Qx_Para);
-	
 	return state;
 }
 
@@ -254,7 +254,121 @@ uint8_t W25Qx_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
 	
 	return W25Qx_OK;
 }
+//无检验写SPI FLASH 
+//必须确保所写的地址范围内的数据全部为0XFF,否则在非0XFF处写入的数据将失败!
+//具有自动换页功能 
+//在指定地址开始写入指定长度的数据,但是要确保地址不越界!
+//pBuffer:数据存储区
+//WriteAddr:开始写入的地址(24bit)
+//NumByteToWrite:要写入的字节数(最大65535)
+//CHECK OK
+void W25QXX_Write_NoCheck(uint8_t* pBuffer,uint32_t WriteAddr,uint16_t NumByteToWrite)   
+{ 			 		 
+	uint16_t pageremain;	   
+	pageremain=256-WriteAddr%256; //单页剩余的字节数		 	    
+	if(NumByteToWrite<=pageremain)pageremain=NumByteToWrite;//不大于256个字节
+	while(1)
+	{	   
+		W25Qx_Write(pBuffer,WriteAddr,pageremain);
+		if(NumByteToWrite==pageremain)break;//写入结束了
+	 	else //NumByteToWrite>pageremain
+		{
+			pBuffer+=pageremain;
+			WriteAddr+=pageremain;	
 
+			NumByteToWrite-=pageremain;			  //减去已经写入了的字节数
+			if(NumByteToWrite>256)pageremain=256; //一次可以写入256个字节
+			else pageremain=NumByteToWrite; 	  //不够256个字节了
+		}
+	}    
+} 
+//写SPI FLASH  
+//在指定地址开始写入指定长度的数据
+//该函数带擦除操作!
+//pBuffer:数据存储区
+//WriteAddr:开始写入的地址(24bit)						
+//NumByteToWrite:要写入的字节数(最大65535)   
+uint8_t W25QXX_BUFFER[4096];		 
+void W25QXX_Write(uint8_t* pBuffer,uint32_t WriteAddr,uint16_t NumByteToWrite)   
+{ 
+	uint32_t secpos;
+	uint16_t secoff;
+	uint16_t secremain;	   
+ 	uint16_t i;    
+	uint8_t * W25QXX_BUF;	  
+   	W25QXX_BUF=W25QXX_BUFFER;	     
+ 	secpos=WriteAddr/4096;//扇区地址  
+	secoff=WriteAddr%4096;//在扇区内的偏移
+	secremain=4096-secoff;//扇区剩余空间大小   
+ 	//printf("ad:%X,nb:%X\r\n",WriteAddr,NumByteToWrite);//测试用
+ 	if(NumByteToWrite<=secremain)secremain=NumByteToWrite;//不大于4096个字节
+	while(1) 
+	{	
+		W25Qx_Read(W25QXX_BUF,secpos*4096,4096);//读出整个扇区的内容
+		for(i=0;i<secremain;i++)//校验数据
+		{
+			if(W25QXX_BUF[secoff+i]!=0XFF)break;//需要擦除  	  
+		}
+		if(i<secremain)//需要擦除
+		{
+			W25Qx_Erase_Block(secpos<<12);//擦除这个扇区
+			for(i=0;i<secremain;i++)	   //复制
+			{
+				W25QXX_BUF[i+secoff]=pBuffer[i];	  
+			}
+			W25QXX_Write_NoCheck(W25QXX_BUF,secpos*4096,4096);//写入整个扇区  
+
+		}else W25QXX_Write_NoCheck(pBuffer,WriteAddr,secremain);//写已经擦除了的,直接写入扇区剩余区间. 				   
+		if(NumByteToWrite==secremain)break;//写入结束了
+		else//写入未结束
+		{
+			secpos++;//扇区地址增1
+			secoff=0;//偏移位置为0 	 
+
+		   	pBuffer+=secremain;  //指针偏移
+			WriteAddr+=secremain;//写地址偏移	   
+		   	NumByteToWrite-=secremain;				//字节数递减
+			if(NumByteToWrite>4096)secremain=4096;	//下一个扇区还是写不完
+			else secremain=NumByteToWrite;			//下一个扇区可以写完了
+		}	 
+	};	 
+}
+
+uint32_t FS_W25Qx_Write(uint8_t* pBuffer,uint32_t WriteAddr,uint32_t NumByteToWrite)
+{
+	uint8_t RES=0;
+	uint32_t Page_Num = (NumByteToWrite>>8)+1;
+	uint32_t Block_to_Erase = (NumByteToWrite>>12)+1;
+	uint32_t Erase_Addr = WriteAddr;
+	for(;Block_to_Erase>0;Block_to_Erase--)
+	{
+		RES+=W25Qx_Erase_Block(Erase_Addr);
+		Erase_Addr = Erase_Addr+4096;
+	}
+	for(;Page_Num>0;Page_Num--)
+	{
+		RES+=W25Qx_Write(pBuffer,WriteAddr,256);
+		pBuffer+=256;
+		WriteAddr+=256;
+	}
+	//if(Byte_Remainder != 0)RES+=W25Qx_Write(pBuffer,WriteAddr,256);
+	return RES;
+}
+
+uint32_t FS_W25Qx_Read(uint8_t* pBuffer,uint32_t ReadAddr,uint32_t NumByteToRead)
+{
+	uint8_t RES = 0;
+	uint32_t Freq_To_Read = (NumByteToRead>>16);
+	uint16_t Byte_Remainder = NumByteToRead%65536;
+	for(;Freq_To_Read>0;Freq_To_Read--)
+	{
+		RES += W25Qx_Read(pBuffer,ReadAddr,0xffff);
+		pBuffer += 0xffff;
+		ReadAddr += 0xffff;
+	}
+	if(Byte_Remainder!=0)RES += W25Qx_Read(pBuffer,ReadAddr,Byte_Remainder);
+	return RES;
+}
 /**
   * @brief  Erases the specified block of the QSPI memory. 
   * @param  BlockAddress: Block address to erase  
