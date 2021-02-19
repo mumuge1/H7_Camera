@@ -21,5 +21,6 @@ void image2flash(uint8_t ofs, void* image,char* image_name);
 void Read_Font_From_SD(void);
 void test(void);
 void Font2FALSH(void);
+void test_sd(void);
 void Read_Font_From_FLASH(void);
 #endif  /*FATFSDEMO*/

@@ -170,14 +170,13 @@ int main(void)
   MX_SDMMC1_SD_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-	printf("tttt");
 //	Font2SD();
 //  Read_Font_From_SD();
 //	Font2FALSH();
 //	Read_Font_From_FLASH();
 //	W25Qx_Init();
 //	printf("²Á³ý:%d\r\n",W25Qx_Erase_Chip());
-
+//	test_sd();
 	lv_init();
 	lv_port_disp_init();
 	lv_port_fs_init();

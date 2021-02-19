@@ -54,7 +54,7 @@
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
-          <BrowseInformation>0</BrowseInformation>
+          <BrowseInformation>1</BrowseInformation>
           <ListingPath></ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
@@ -188,7 +188,7 @@
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>16</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -1288,34 +1288,9 @@
               <FilePath>..\lvgl\lv_port_indev_template.c</FilePath>
             </File>
             <File>
-              <FileName>color.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\lvgl\docs\color.c</FilePath>
-            </File>
-            <File>
-              <FileName>CSGO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\lvgl\docs\CSGO.c</FilePath>
-            </File>
-            <File>
-              <FileName>image_scen.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\lvgl\docs\image_scen.c</FilePath>
-            </File>
-            <File>
               <FileName>lv_demo_benchmark.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\lvgl\docs\lv_demo_benchmark.c</FilePath>
-            </File>
-            <File>
-              <FileName>my_Font1.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\lvgl\docs\my_Font1.c</FilePath>
-            </File>
-            <File>
-              <FileName>myFont.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\lvgl\docs\myFont.c</FilePath>
             </File>
           </Files>
         </Group>

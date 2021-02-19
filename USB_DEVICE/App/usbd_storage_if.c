@@ -23,9 +23,8 @@
 #include "usbd_storage_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "sdmmc.h"
 #include "w25qxx.h"
-#include "w25qxx_qspi.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,6 +70,7 @@
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 #define STORAGE_LUN_NBR_MY               1
+#define SD_READ_TIMEOUT                  100U
 /* USER CODE END PRIVATE_DEFINES */
 
 /**
@@ -113,18 +113,18 @@ const int8_t STORAGE_Inquirydata_FS[] = {/* 36 */
   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
   '0', '.', '0' ,'1',                     /* Version      : 4 Bytes */
 	/* LUN 1 */
-//  0x00,
-//  0x80,
-//  0x02,
-//  0x02,
-//  (STANDARD_INQUIRY_DATA_LEN - 5),
-//  0x00,
-//  0x00,	
-//  0x00,
-//  'W', 'e', 'A', 'c', 't', ' ', ' ', ' ', /* Manufacturer : 8 bytes */
-//  'Q', 'S', 'P', 'I', ' ', 'M', 'S', 'C', /* Product      : 16 Bytes */
-//  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-//  '0', '.', '0' ,'1',     
+  0x00,
+  0x80,
+  0x02,
+  0x02,
+  (STANDARD_INQUIRY_DATA_LEN - 5),
+  0x00,
+  0x00,	
+  0x00,
+  'W', 'e', 'A', 'c', 't', ' ', ' ', ' ', /* Manufacturer : 8 bytes */
+  'Q', 'S', 'P', 'I', ' ', 'M', 'S', 'C', /* Product      : 16 Bytes */
+  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+  '0', '.', '0' ,'1',     
 }; 
 /* USER CODE END INQUIRY_DATA_FS */
 
@@ -208,8 +208,15 @@ int8_t STORAGE_Init_FS(uint8_t lun)
 int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
   /* USER CODE BEGIN 3 */
-  *block_num  = W25Qx_Para.SUBSECTOR_COUNT;
-  *block_size = W25Qx_Para.SUBSECTOR_SIZE;
+	if(lun == 0){
+	  *block_num  = W25Qx_Para.SUBSECTOR_COUNT;
+	  *block_size = W25Qx_Para.SUBSECTOR_SIZE;
+	}else if(lun == 1){
+		HAL_SD_CardInfoTypeDef CardInfo;
+		if(HAL_SD_GetCardInfo(&hsd1, &CardInfo) != HAL_OK)return -1;
+		*block_num  = CardInfo.LogBlockNbr - 1;
+		*block_size = CardInfo.LogBlockSize;
+	}
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -258,13 +265,9 @@ int8_t STORAGE_Read_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t bl
 	}
 	else if(lun ==1)
 	{
-//		uint16_t i = 0;
-//		for(i = 0; i < blk_len; i ++)
-//		{
-//			W25qxx_Read(buf, blk_addr*W25Qx_Para.SUBSECTOR_SIZE, W25Qx_Para.SUBSECTOR_SIZE);
-//			blk_addr ++;
-//			buf += W25Qx_Para.SUBSECTOR_SIZE;
-//		}	
+		if(HAL_SD_ReadBlocks(&hsd1, buf, blk_addr, blk_len, SD_READ_TIMEOUT*blk_len) != HAL_OK)
+			return -1;
+		while (HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER);
 	}
   return (USBD_OK);
   /* USER CODE END 6 */
@@ -292,14 +295,9 @@ int8_t STORAGE_Write_FS(uint8_t lun, uint8_t *buf, uint32_t blk_addr, uint16_t b
 	}
 	else if(lun ==1)
 	{
-//		uint16_t i = 0;
-//		for(i = 0; i < blk_len; i ++)
-//		{
-//			W25qxx_EraseSector(blk_addr * W25Qx_Para.SUBSECTOR_SIZE);
-//			W25qxx_WriteNoCheck((uint8_t*)buf,blk_addr * W25Qx_Para.SUBSECTOR_SIZE,W25Qx_Para.SUBSECTOR_SIZE);
-//			blk_addr ++;
-//			buf += W25Qx_Para.SUBSECTOR_SIZE;
-//		}
+		if(HAL_SD_WriteBlocks(&hsd1, buf, blk_addr, blk_len, SD_READ_TIMEOUT*blk_len) != HAL_OK)
+			return -1;
+		while (HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER);
 	}
   return (USBD_OK);
   /* USER CODE END 7 */

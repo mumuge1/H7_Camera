@@ -126,7 +126,7 @@ int fputc(int ch, FILE *f)
 int fgetc(FILE *f)
 {
     uint8_t  ch;
-	HAL_UART_Receive(&huart1,(uint8_t *)&ch, 1, 0xFFFF);
+	HAL_UART_Receive(&huart1,(uint8_t *)&ch, 1, 0xF);
 	return  ch;
 }
 /* USER CODE END 1 */

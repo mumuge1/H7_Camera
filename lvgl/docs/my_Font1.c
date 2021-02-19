@@ -38,28 +38,32 @@ static x_header_t __g_xbf_hd = {
 };
 
 
-static uint8_t __g_font_buf[2000];//如bin文件存在SPI FLASH可使用此buff
+static uint8_t __g_font_buf[112];//如bin文件存在SPI FLASH可使用此buff
 
-
+FATFS FS1;
+FIL file1;
+#include <stdio.h>
 static uint8_t *__user_font_getdata(int offset, int size){
     //如字模保存在SPI FLASH, SPIFLASH_Read(__g_font_buf,offset,size);
     //如字模已加载到SDRAM,直接返回偏移地址即可如:return (uint8_t*)(sdram_fontddr+offset);
-	FRESULT fres = FR_NOT_READY;
-	FIL file = {0};
-	fres = f_open(&file, "1:myFont.bin", FA_OPEN_EXISTING | FA_READ);
-	if (fres != FR_OK)
-		goto __out;		// goto常用于错误处理
-	fres = f_lseek(&file, offset);		// 寻址
-	if (fres != FR_OK)
-		goto __out;		
-	fres = f_read(&file, __g_font_buf, NULL, NULL);
-	if (fres == FR_OK)	// 成功则直接返回
-		goto __out;		
-	else
-		memset(__g_font_buf, 0, sizeof(__g_font_buf));  // 清空数组
-		
-__out:
-		f_close(&file);
+    uint32_t br;
+	f_mount(&FS1,"1:",1);
+    if( f_open(&file1, (const TCHAR*)"1:myFont2.bin", FA_READ) != FR_OK )
+    {
+        printf("1:myFont2.bin open failed\r\n");
+    }
+    else
+    {
+        if( f_lseek(&file1, (FSIZE_t)offset) != FR_OK )
+        {
+        printf("1:myFont2.bin lseek failed\r\n");
+        }
+        if( f_read(&file1, __g_font_buf, (UINT)size, (UINT*)&br) != FR_OK )
+        {
+        printf("1:myFont2.bin read failed\r\n");
+        }
+        f_close(&file1);
+    }
     return __g_font_buf;
 }
 

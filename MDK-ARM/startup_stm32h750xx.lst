@@ -48,44 +48,44 @@ ARM Macro Assembler    Page 1
    30 00000000         ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
    31 00000000         ; </h>
    32 00000000         
-   33 00000000 00002000 
+   33 00000000 00003000 
                        Stack_Size
-                               EQU              0x2000
+                               EQU              0x3000
    34 00000000         
    35 00000000                 AREA             STACK, NOINIT, READWRITE, ALIGN
 =3
    36 00000000         Stack_Mem
                                SPACE            Stack_Size
-   37 00002000         __initial_sp
-   38 00002000         
-   39 00002000         
-   40 00002000         ; <h> Heap Configuration
-   41 00002000         ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
-   42 00002000         ; </h>
-   43 00002000         
+   37 00003000         __initial_sp
+   38 00003000         
+   39 00003000         
+   40 00003000         ; <h> Heap Configuration
+   41 00003000         ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
+   42 00003000         ; </h>
+   43 00003000         
 
 
 
 ARM Macro Assembler    Page 2 
 
 
-   44 00002000 00002000 
+   44 00003000 00003000 
                        Heap_Size
-                               EQU              0x2000
-   45 00002000         
-   46 00002000                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
+                               EQU              0x3000
+   45 00003000         
+   46 00003000                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
 3
    47 00000000         __heap_base
    48 00000000         Heap_Mem
                                SPACE            Heap_Size
-   49 00002000         __heap_limit
-   50 00002000         
-   51 00002000                 PRESERVE8
-   52 00002000                 THUMB
-   53 00002000         
-   54 00002000         
-   55 00002000         ; Vector Table Mapped to Address 0 at Reset
-   56 00002000                 AREA             RESET, DATA, READONLY
+   49 00003000         __heap_limit
+   50 00003000         
+   51 00003000                 PRESERVE8
+   52 00003000                 THUMB
+   53 00003000         
+   54 00003000         
+   55 00003000         ; Vector Table Mapped to Address 0 at Reset
+   56 00003000                 AREA             RESET, DATA, READONLY
    57 00000000                 EXPORT           __Vectors
    58 00000000                 EXPORT           __Vectors_End
    59 00000000                 EXPORT           __Vectors_Size
@@ -699,9 +699,9 @@ ARM Macro Assembler    Page 11
   240 00000000                 IMPORT           SystemInit
   241 00000000                 IMPORT           __main
   242 00000000         
-  243 00000000 4809            LDR              R0, =SystemInit
+  243 00000000 4806            LDR              R0, =SystemInit
   244 00000002 4780            BLX              R0
-  245 00000004 4809            LDR              R0, =__main
+  245 00000004 4806            LDR              R0, =__main
   246 00000006 4700            BX               R0
   247 00000008                 ENDP
   248 00000008         
@@ -1257,36 +1257,24 @@ ARM Macro Assembler    Page 20
   587 0000001C         ;*******************************************************
                        ************************
   588 0000001C                 IF               :DEF:__MICROLIB
-  595 0000001C         
-  596 0000001C                 IMPORT           __use_two_region_memory
-  597 0000001C                 EXPORT           __user_initial_stackheap
-  598 0000001C         
-  599 0000001C         __user_initial_stackheap
-  600 0000001C         
-  601 0000001C 4804            LDR              R0, =  Heap_Mem
-  602 0000001E 4905            LDR              R1, =(Stack_Mem + Stack_Size)
-  603 00000020 4A05            LDR              R2, = (Heap_Mem +  Heap_Size)
-  604 00000022 4B06            LDR              R3, = Stack_Mem
-  605 00000024 4770            BX               LR
-  606 00000026         
-  607 00000026 00 00           ALIGN
-  608 00000028         
-  609 00000028                 ENDIF
-  610 00000028         
-  611 00000028                 END
+  589 0000001C         
+  590 0000001C                 EXPORT           __initial_sp
+  591 0000001C                 EXPORT           __heap_base
+  592 0000001C                 EXPORT           __heap_limit
+  593 0000001C         
+  594 0000001C                 ELSE
+  609                          ENDIF
+  610 0000001C         
+  611 0000001C                 END
               00000000 
-              00000000 
-              00000000 
-              00002000 
-              00002000 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M7.fp.dp --apcs=
 interwork --depend=.\output\startup_stm32h750xx.d -o.\output\startup_stm32h750x
 x.o -ID:\ARM\ARM\RV31\Inc -I.\RTE\_H7_Proj -ID:\ARM\pack\ARM\CMSIS\5.7.0\CMSIS\
 Core\Include -ID:\ARM\pack\Keil\STM32H7xx_DFP\2.7.0\Drivers\CMSIS\Device\ST\STM
-32H7xx\Include --predefine="__RTX SETA 1" --predefine="__UVISION_VERSION SETA 5
-29" --predefine="_RTE_ SETA 1" --predefine="STM32H750xx SETA 1" --list=startup_
-stm32h750xx.lst startup_stm32h750xx.s
+32H7xx\Include --predefine="__RTX SETA 1" --predefine="__MICROLIB SETA 1" --pre
+define="__UVISION_VERSION SETA 529" --predefine="_RTE_ SETA 1" --predefine="STM
+32H750xx SETA 1" --list=startup_stm32h750xx.lst startup_stm32h750xx.s
 
 
 
@@ -1307,17 +1295,17 @@ Symbol: Stack_Mem
    Definitions
       At line 36 in file startup_stm32h750xx.s
    Uses
-      At line 602 in file startup_stm32h750xx.s
-      At line 604 in file startup_stm32h750xx.s
-
-__initial_sp 00002000
+      None
+Comment: Stack_Mem unused
+__initial_sp 00003000
 
 Symbol: __initial_sp
    Definitions
       At line 37 in file startup_stm32h750xx.s
    Uses
       At line 61 in file startup_stm32h750xx.s
-Comment: __initial_sp used once
+      At line 590 in file startup_stm32h750xx.s
+
 3 symbols
 
 
@@ -1339,25 +1327,24 @@ Symbol: Heap_Mem
    Definitions
       At line 48 in file startup_stm32h750xx.s
    Uses
-      At line 601 in file startup_stm32h750xx.s
-      At line 603 in file startup_stm32h750xx.s
-
+      None
+Comment: Heap_Mem unused
 __heap_base 00000000
 
 Symbol: __heap_base
    Definitions
       At line 47 in file startup_stm32h750xx.s
    Uses
-      None
-Comment: __heap_base unused
-__heap_limit 00002000
+      At line 591 in file startup_stm32h750xx.s
+Comment: __heap_base used once
+__heap_limit 00003000
 
 Symbol: __heap_limit
    Definitions
       At line 49 in file startup_stm32h750xx.s
    Uses
-      None
-Comment: __heap_limit unused
+      At line 592 in file startup_stm32h750xx.s
+Comment: __heap_limit used once
 4 symbols
 
 
@@ -2903,39 +2890,29 @@ Symbol: WWDG_IRQHandler
       At line 79 in file startup_stm32h750xx.s
       At line 295 in file startup_stm32h750xx.s
 
-__user_initial_stackheap 0000001C
-
-Symbol: __user_initial_stackheap
-   Definitions
-      At line 599 in file startup_stm32h750xx.s
-   Uses
-      At line 597 in file startup_stm32h750xx.s
-Comment: __user_initial_stackheap used once
-153 symbols
+152 symbols
 
 
 
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Absolute symbols
 
-Heap_Size 00002000
+Heap_Size 00003000
 
 Symbol: Heap_Size
    Definitions
       At line 44 in file startup_stm32h750xx.s
    Uses
       At line 48 in file startup_stm32h750xx.s
-      At line 603 in file startup_stm32h750xx.s
-
-Stack_Size 00002000
+Comment: Heap_Size used once
+Stack_Size 00003000
 
 Symbol: Stack_Size
    Definitions
       At line 33 in file startup_stm32h750xx.s
    Uses
       At line 36 in file startup_stm32h750xx.s
-      At line 602 in file startup_stm32h750xx.s
-
+Comment: Stack_Size used once
 __Vectors_Size 00000298
 
 Symbol: __Vectors_Size
@@ -2967,13 +2944,5 @@ Symbol: __main
    Uses
       At line 245 in file startup_stm32h750xx.s
 Comment: __main used once
-__use_two_region_memory 00000000
-
-Symbol: __use_two_region_memory
-   Definitions
-      At line 596 in file startup_stm32h750xx.s
-   Uses
-      None
-Comment: __use_two_region_memory unused
-3 symbols
-508 symbols in table
+2 symbols
+505 symbols in table
