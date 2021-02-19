@@ -1,6 +1,15 @@
-# WeAct Studio
-## SPI Flash Test
+# stm32h750
+## lvgl+fatfs
+用weact的H750开发板做的一个小项目。
 
-两颗Flash读写测试，通过USB模拟成两个U盘
 
-Two Flash read and write tests, through USB simulation into two U disk
+更新日志:
+
+2021/02/14  :完成了LCD驱动以及lvgl移植，并且在8Mqspi上运行。
+
+2021/02/15：完成了基于SD card和ext-flash的文件系统移植（fatfs）。
+
+2021/02/18: 这两天一直在跳坑，ext-flash的文件系统驱动错误，今天（20:31）这时候才改过来，明天继续修改SD-card的文件系统。
+看起来挺简单，实际上自己移植时有不少坑在使用的时候才显现出来。
+
+
