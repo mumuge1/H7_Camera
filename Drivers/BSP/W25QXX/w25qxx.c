@@ -8,7 +8,6 @@ W25Qx_Parameter W25Qx_Para;
   * @brief  Initializes the W25QXXXX interface.
   * @retval None
   */
-
 uint8_t W25Qx_Init(void)
 { 
 	uint8_t state;
@@ -16,6 +15,7 @@ uint8_t W25Qx_Init(void)
 	W25Qx_Reset();
 	delay(5);
 	state = W25Qx_Get_Parameter(&W25Qx_Para);
+	
 	return state;
 }
 
@@ -332,42 +332,6 @@ void W25QXX_Write(uint8_t* pBuffer,uint32_t WriteAddr,uint16_t NumByteToWrite)
 			else secremain=NumByteToWrite;			//下一个扇区可以写完了
 		}	 
 	};	 
-}
-
-uint32_t FS_W25Qx_Write(uint8_t* pBuffer,uint32_t WriteAddr,uint32_t NumByteToWrite)
-{
-	uint8_t RES=0;
-	uint32_t Page_Num = (NumByteToWrite>>8)+1;
-	uint32_t Block_to_Erase = (NumByteToWrite>>12)+1;
-	uint32_t Erase_Addr = WriteAddr;
-	for(;Block_to_Erase>0;Block_to_Erase--)
-	{
-		RES+=W25Qx_Erase_Block(Erase_Addr);
-		Erase_Addr = Erase_Addr+4096;
-	}
-	for(;Page_Num>0;Page_Num--)
-	{
-		RES+=W25Qx_Write(pBuffer,WriteAddr,256);
-		pBuffer+=256;
-		WriteAddr+=256;
-	}
-	//if(Byte_Remainder != 0)RES+=W25Qx_Write(pBuffer,WriteAddr,256);
-	return RES;
-}
-
-uint32_t FS_W25Qx_Read(uint8_t* pBuffer,uint32_t ReadAddr,uint32_t NumByteToRead)
-{
-	uint8_t RES = 0;
-	uint32_t Freq_To_Read = (NumByteToRead>>16);
-	uint16_t Byte_Remainder = NumByteToRead%65536;
-	for(;Freq_To_Read>0;Freq_To_Read--)
-	{
-		RES += W25Qx_Read(pBuffer,ReadAddr,0xffff);
-		pBuffer += 0xffff;
-		ReadAddr += 0xffff;
-	}
-	if(Byte_Remainder!=0)RES += W25Qx_Read(pBuffer,ReadAddr,Byte_Remainder);
-	return RES;
 }
 /**
   * @brief  Erases the specified block of the QSPI memory. 

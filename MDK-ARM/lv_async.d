@@ -1,0 +1,13 @@
+.\lv_async.o: ..\lvgl\src\lv_misc\lv_async.c
+.\lv_async.o: ..\lvgl\src\lv_misc\lv_async.h
+.\lv_async.o: ..\lvgl\src\lv_misc\lv_task.h
+.\lv_async.o: ..\lvgl\src\lv_misc\../lv_conf_internal.h
+.\lv_async.o: D:\ARM\ARM\ARMCC\Bin\..\include\stdint.h
+.\lv_async.o: ..\lvgl\src\lv_misc\../lv_conf_kconfig.h
+.\lv_async.o: ..\lvgl\src\lv_core\../../lv_conf.h
+.\lv_async.o: D:\ARM\ARM\ARMCC\Bin\..\include\stdbool.h
+.\lv_async.o: ..\lvgl\src\lv_misc\lv_mem.h
+.\lv_async.o: D:\ARM\ARM\ARMCC\Bin\..\include\stddef.h
+.\lv_async.o: ..\lvgl\src\lv_misc\lv_log.h
+.\lv_async.o: ..\lvgl\src\lv_misc\lv_types.h
+.\lv_async.o: ..\lvgl\src\lv_misc\lv_ll.h

@@ -22,17 +22,10 @@
 #define DARKBLUE      	 0X01CF	//深蓝色
 #define LIGHTBLUE      	 0X7D7C	//浅蓝色  
 #define GRAYBLUE       	 0X5458 //灰蓝色
-
 extern ST7735_Object_t st7735_pObj;
 extern uint32_t st7735_id;
-
-extern uint16_t POINT_COLOR;	//画笔颜色
-extern uint16_t BACK_COLOR;  //背景色 
-
 void LCD_Init(void);
 void LCD_SetBrightness(uint32_t Brightness);
-uint32_t LCD_GetBrightness(void);
-void LCD_Light(uint32_t Brightness_Dis,uint32_t time);
 void LCD_ShowChar(uint16_t x,uint16_t y,uint8_t num,uint8_t size,uint8_t mode);
 void LCD_ShowString(uint16_t x,uint16_t y,uint16_t width,uint16_t height,uint8_t size,uint8_t *p);
 extern ST7735_Ctx_t ST7735Ctx;

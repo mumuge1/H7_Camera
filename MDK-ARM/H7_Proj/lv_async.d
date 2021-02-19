@@ -1,0 +1,13 @@
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\lv_async.c
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\lv_async.h
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\lv_task.h
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\../lv_conf_internal.h
+.\06-spiflash_test_lcd0_96\lv_async.o: D:\ARM\ARM\ARMCC\Bin\..\include\stdint.h
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\../lv_conf_kconfig.h
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_core\../../lv_conf.h
+.\06-spiflash_test_lcd0_96\lv_async.o: D:\ARM\ARM\ARMCC\Bin\..\include\stdbool.h
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\lv_mem.h
+.\06-spiflash_test_lcd0_96\lv_async.o: D:\ARM\ARM\ARMCC\Bin\..\include\stddef.h
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\lv_log.h
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\lv_types.h
+.\06-spiflash_test_lcd0_96\lv_async.o: ..\lvgl\src\lv_misc\lv_ll.h

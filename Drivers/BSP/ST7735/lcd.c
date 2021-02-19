@@ -59,54 +59,6 @@ void LCD_SetBrightness(uint32_t Brightness)
 	__HAL_TIM_SetCompare(LCD_Brightness_timer, LCD_Brightness_channel, Brightness);
 }
 
-uint32_t LCD_GetBrightness(void)
-{
-		return __HAL_TIM_GetCompare(LCD_Brightness_timer, LCD_Brightness_channel);
-}
-
-
-// 屏幕逐渐变亮或者变暗
-// Brightness_Dis: 目标值
-// time: 达到目标值的时间,单位: ms
-void LCD_Light(uint32_t Brightness_Dis,uint32_t time)
-{
-	uint32_t Brightness_Now;
-	uint32_t time_now;
-	float temp1,temp2;
-	float k,set;
-	
-	Brightness_Now = LCD_GetBrightness();
-	time_now = 0;
-	if(Brightness_Now == Brightness_Dis)
-		return;
-	
-	if(time == time_now)
-		return;
-	
-	temp1 = Brightness_Now;
-	temp1 = temp1 - Brightness_Dis;
-	temp2 = time_now;
-	temp2 = temp2 - time;
-	
-	k = temp1 / temp2;
-	
-	uint32_t tick=get_tick();
-	while(1)
-	{
-		delay_ms(1);
-		
-		time_now = get_tick()-tick;
-		
-		temp2 = time_now - 0;
-		
-		set = temp2*k + Brightness_Now;
-		
-		LCD_SetBrightness((uint32_t)set);
-		
-		if(time_now >= time) break;
-		
-	}
-}
 	
 uint16_t POINT_COLOR=0xFFFF;	//画笔颜色
 uint16_t BACK_COLOR=BLACK;  //背景色 

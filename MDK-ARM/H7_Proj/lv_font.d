@@ -1,0 +1,15 @@
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\lv_font.c
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\lv_font.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\../lv_conf_internal.h
+.\06-spiflash_test_lcd0_96\lv_font.o: D:\ARM\ARM\ARMCC\Bin\..\include\stdint.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\../lv_conf_kconfig.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_core\../../lv_conf.h
+.\06-spiflash_test_lcd0_96\lv_font.o: D:\ARM\ARM\ARMCC\Bin\..\include\stddef.h
+.\06-spiflash_test_lcd0_96\lv_font.o: D:\ARM\ARM\ARMCC\Bin\..\include\stdbool.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\lv_symbol_def.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\../lv_misc/lv_area.h
+.\06-spiflash_test_lcd0_96\lv_font.o: D:\ARM\ARM\ARMCC\Bin\..\include\string.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\../lv_misc/lv_mem.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\../lv_misc/lv_log.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\../lv_misc/lv_types.h
+.\06-spiflash_test_lcd0_96\lv_font.o: ..\lvgl\src\lv_font\../lv_misc/lv_utils.h

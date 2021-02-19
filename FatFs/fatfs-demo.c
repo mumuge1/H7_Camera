@@ -22,10 +22,10 @@ extern uint32_t FONT_SIZE,glyph_dsc_SIZE,unicode_SIZE;
 void test1(void)
 {
 	res_flash = f_mount(&fs,FALSH_PATH,1);printf("RES:%d",res_flash);
-	res_flash = f_open(&file,"1:my_Font_16/glyph_bitmap.bin",FA_READ);printf("RES:%d",res_flash);
+	res_flash = f_open(&file,"1:test.txt",FA_READ);printf("RES:%d",res_flash);
 	res_flash = f_read(&file,readbuffer2,TEST_SIZE,&fnum);printf("RES:%d",res_flash);
-	for(int i=0;i<TEST_SIZE;i++)
-		printf("0x%x,",readbuffer2[i]);
+	//for(int i=0;i<TEST_SIZE;i++)
+		printf("%s",readbuffer2);
 	f_close(&file);
 	f_unmount(FALSH_PATH);
 }
