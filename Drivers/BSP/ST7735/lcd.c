@@ -51,12 +51,12 @@ void LCD_Init(void)
 	ST7735_RegisterBusIO(&st7735_pObj,&st7735_pIO);
 	ST7735_LCD_Driver.Init(&st7735_pObj,ST7735_FORMAT_RBG565,&ST7735Ctx);
 	ST7735_LCD_Driver.ReadID(&st7735_pObj,&st7735_id);
-	LCD_SetBrightness(400);
+	LCD_SetBrightness(500);
 }
 
 void LCD_SetBrightness(uint32_t Brightness)
 {
-	__HAL_TIM_SetCompare(LCD_Brightness_timer, LCD_Brightness_channel, Brightness);
+	__HAL_TIM_SetCompare(LCD_Brightness_timer, LCD_Brightness_channel, Brightness-1);
 }
 
 	
