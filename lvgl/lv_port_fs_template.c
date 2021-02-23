@@ -106,12 +106,13 @@ void lv_port_fs_init(void)
  *   STATIC FUNCTIONS
  **********************/
 FATFS FS;
+//FATFS FS0;
 /* Initialize your Storage device and File system. */
 static void fs_init(void)
 {
     /*E.g. for FatFS initialize the SD card and FatFS itself*/
 	f_mount(&FS, "1:", 1);
-	
+//	f_mount(&FS0, "0:", 1);
     /*You code here*/
 }
 

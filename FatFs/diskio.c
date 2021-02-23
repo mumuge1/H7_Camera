@@ -11,7 +11,8 @@
 #include "diskio.h"		/* Declarations of disk functions */
 #include "w25qxx.h"
 #include "sdmmc.h"
-#include "main.h"
+//#include "main.h"
+#include "SD_Card.h"
 #define SD_READ_TIMEOUT 0xff
 /* Definitions of physical drive number for each drive */
 #define DEV_SD_CARD		0	/* Example: Map Ramdisk to physical drive 0 */
@@ -36,7 +37,7 @@ DSTATUS disk_status (
 /*-----------------------------------------------------------------------*/
 /* Inidialize a Drive                                                    */
 /*-----------------------------------------------------------------------*/
-
+#include <stdio.h>
 DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
@@ -44,10 +45,8 @@ DSTATUS disk_initialize (
 	DSTATUS stat;
 	switch (pdrv) {
 	case DEV_SD_CARD :
-		if(HAL_SD_GetCardState(&hsd1) != HAL_SD_STATE_ERROR )
-			return RES_OK;
-		else
-			return RES_ERROR;
+		stat = SD_GetCardState();
+		return stat;
 	case DEV_FLASH :
         stat = W25Qx_Init();
 		return stat;
@@ -73,10 +72,13 @@ DRESULT disk_read (
 
 	switch (pdrv) {
 	case DEV_SD_CARD :
-		if(HAL_SD_ReadBlocks(&hsd1, (uint8_t*)buff, sector, count, SD_READ_TIMEOUT*count) != HAL_OK)
-			return RES_ERROR;
-		while (HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER){}
-			return RES_OK;
+		res=SD_ReadDisk(buff,sector,count);
+		while(res)//读出错
+			{
+				MX_SDMMC1_SD_Init();	//重新初始化SD卡
+				res=SD_ReadDisk(buff,sector,count);	
+			}
+			break;
 
 	case DEV_FLASH :
 		// translate the arguments here
@@ -116,10 +118,13 @@ DRESULT disk_write (
 
 	switch (pdrv) {
 	case DEV_SD_CARD :
-		if(HAL_SD_WriteBlocks(&hsd1, (uint8_t*)buff, sector, count, SD_READ_TIMEOUT*count) != HAL_OK)
-			return RES_ERROR;
-		while(HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER){}
-			return RES_OK;
+		res=SD_WriteDisk((uint8_t*)buff,sector,count);
+			while(res)//写出错
+			{
+				MX_SDMMC1_SD_Init();	//重新初始化SD卡
+				res=SD_WriteDisk((uint8_t*)buff,sector,count);	
+			}
+			break;
 
 	case DEV_FLASH :
 		for(;count>0;count--)
@@ -133,7 +138,7 @@ DRESULT disk_write (
 		return res;
 	}
 
-	return RES_PARERR;
+	return res;
 }
 
 #endif

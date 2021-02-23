@@ -19,6 +19,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "jpeg.h"
+#include "mdma.h"
 #include "rtc.h"
 #include "sdmmc.h"
 #include "spi.h"
@@ -37,6 +39,8 @@
 #include "w25qxx.h"
 #include <stdio.h>
 #include "fatfs-demo.h"
+#include "arm_math.h"
+#include "SD_Card.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -138,7 +142,7 @@ static void CPU_CACHE_Enable(void)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	SCB->VTOR = QSPI_BASE;
+  SCB->VTOR = QSPI_BASE;
   MPU_Config();
   CPU_CACHE_Enable();
 	
@@ -162,6 +166,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_MDMA_Init();
   MX_RTC_Init();
   MX_SPI1_Init();
   MX_SPI4_Init();
@@ -169,6 +174,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_SDMMC1_SD_Init();
   MX_USART1_UART_Init();
+  MX_JPEG_Init();
   /* USER CODE BEGIN 2 */
 //	Font2SD();
 //  Read_Font_From_SD();
@@ -177,19 +183,20 @@ int main(void)
 //	W25Qx_Init();
 //	printf("²Á³ý:%d\r\n",W25Qx_Erase_Chip());
 //	test_sd();
+
 	lv_init();
 	lv_port_disp_init();
-	lv_port_fs_init();
-	lv_port_indev_init();
-	lv_demo_benchmark();
+//	lv_port_fs_init();
+//	lv_port_indev_init();
+//	lv_demo_benchmark();
 //	Font2SD();
 //	test();
-//	test1();
+	test1();
 //  SD_fatfs();
 //    fatfs_test();
 //	miscellaneous();
 //	file_check();
-	
+//	Get_SD_Info();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -201,7 +208,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 		
-	lv_task_handler();
+//	lv_task_handler();
   }
   /* USER CODE END 3 */
 }
@@ -230,15 +237,17 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_LSI
+                              |RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 5;
   RCC_OscInitStruct.PLL.PLLN = 96;
   RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 6;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
@@ -285,6 +294,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSI48, RCC_MCODIV_4);
   /** Enable USB Voltage detector
   */
   HAL_PWREx_EnableUSBVoltageDetector();

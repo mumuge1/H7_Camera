@@ -69,7 +69,7 @@
 #define STORAGE_BLK_SIZ                  0x200
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
-#define STORAGE_LUN_NBR_MY               1
+#define STORAGE_LUN_NBR_MY               2
 #define SD_READ_TIMEOUT                  100U
 /* USER CODE END PRIVATE_DEFINES */
 
@@ -213,7 +213,8 @@ int8_t STORAGE_GetCapacity_FS(uint8_t lun, uint32_t *block_num, uint16_t *block_
 	  *block_size = W25Qx_Para.SUBSECTOR_SIZE;
 	}else if(lun == 1){
 		HAL_SD_CardInfoTypeDef CardInfo;
-		if(HAL_SD_GetCardInfo(&hsd1, &CardInfo) != HAL_OK)return -1;
+//		if(HAL_SD_GetCardInfo(&hsd1, &CardInfo) != HAL_OK)return -1;
+		HAL_SD_GetCardInfo(&hsd1, &CardInfo);
 		*block_num  = CardInfo.LogBlockNbr - 1;
 		*block_size = CardInfo.LogBlockSize;
 	}

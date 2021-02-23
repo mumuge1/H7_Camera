@@ -26,32 +26,54 @@ void test_sd(void)
 	printf("%s",readbuffer2);
 	f_close(&file);
 }
-
+uint8_t image[14158];
+uint8_t image1[7339];
+#include "decode_dma.h"
+#include "lcd.h"
+extern UART_HandleTypeDef huart1;
 void test1(void)
 {
-	res_flash = f_mount(&fs,FALSH_PATH,1);printf("RES:%d",res_flash);
-	res_flash = f_open(&file,"1:test.txt",FA_READ);printf("RES:%d",res_flash);
-	res_flash = f_read(&file,readbuffer2,TEST_SIZE,&fnum);printf("RES:%d",res_flash);
-	//for(int i=0;i<TEST_SIZE;i++)
-		printf("%s",readbuffer2);
+	res_flash = f_mount(&fs,FALSH_PATH,1);
+	res_flash = f_open(&file,"1:th.jpg",FA_READ);
+	res_flash = f_read(&file,image1,7339,&fnum);
+	Jpeg_HWDecodingEnd = 0;
+	JPEG_Decode_DMA((uint32_t)image1, sizeof(image1) , (uint32_t)image1_decode);
+	while(Jpeg_HWDecodingEnd==0);
+//	printf("image:%d,%d,%d,%d,%d\n",1,160*80,160,80,7);
+//	HAL_UART_Transmit(&huart1,image1_decode,160*80,0xffff);	
+//	HAL_Delay(1000);
+//	HAL_UART_Transmit(&huart1,image1_decode,160*80,0xffff);
+	ST7735_FillRGBRect(&st7735_pObj,0,0,image1_decode,160,80);
 	f_close(&file);
 	f_unmount(FALSH_PATH);
 }
-void test(void)
+//void HAL_JPEG_DecodeCpltCallback(JPEG_HandleTypeDef *hjpeg)
+//{
+//	HAL_GPIO_WritePin(E3_GPIO_Port,E3_Pin,GPIO_PIN_RESET);
+//	printf("HAL_JPEG_DecodeCpltCallback!\r\n");
+//}
+
+//void HAL_JPEG_ErrorCallback(JPEG_HandleTypeDef *hjpeg)
+//{
+//	HAL_JPEG_STATETypeDef jpeg_stat = HAL_JPEG_GetState(hjpeg);
+//	printf("encode error:%d\r\n",jpeg_stat);
+//}
+//void HAL_JPEG_GetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t NbDecodedData)
+//{
+//	
+//}
+//void HAL_JPEG_DataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *pDataOut, uint32_t OutDataLength)
+//{
+//	printf("HAL_JPEG_DataReadyCallback!\r\n");
+//}
+uint8_t jpeg_buffer[14158];
+void JPEG_Decode(void)
 {
-	memset(WriteBuffer2,0x21,TEST_SIZE);
-	res_flash = f_mount(&fs,FALSH_PATH,1);printf("RES:%d",res_flash);
-	res_flash = f_unlink("1:test.txt");printf("RES:%d",res_flash);
-	res_flash = f_open(&file,"1:test.txt",FA_READ|FA_WRITE|FA_CREATE_ALWAYS);printf("RES:%d",res_flash);
-	res_flash = f_write(&file,WriteBuffer2,TEST_SIZE,&fnum);printf("RES:%d",res_flash);
+	res_flash = f_open(&file,"1:scen_img.JPG",FA_READ);printf("RES:%d",res_flash);
+	printf("size:%d",f_size(&file));
+	res_flash = f_read(&file,jpeg_buffer,14158,&fnum);printf("RES:%d",res_flash);
+	
 	f_close(&file);
-	res_flash = f_open(&file,"1:test.txt",FA_READ);printf("RES:%d",res_flash);
-	res_flash = f_read(&file,readbuffer2,TEST_SIZE,&fnum);printf("RES:%d",res_flash);
-//	for(int i=0;i<TEST_SIZE;i++)
-//		printf("0x%x,",readbuffer2[i]);
-	printf("%s",readbuffer2);
-	f_close(&file);
-	f_unmount(FALSH_PATH);
 }
 //uint8_t* glyph_bitmap_1;
 //uint16_t* unicode_list_1_1;
@@ -270,11 +292,14 @@ void SD_fatfs(void)
             res_flash = f_mount(NULL,"0:",0);
             res_flash = f_mount(&fs0,"0:",0);
         }else{
-            printf("《《SD卡格式化失败。》》\r\n");
+            printf("SD卡格式化失败:%d\r\n",res_flash);
         }
     }else if(res_flash==FR_OK){
         printf("外部SD卡挂载文件系统成功。(%d)\r\n",res_flash);
-    }
+    }else {
+		printf("error:%d",res_flash);
+	}
+
     printf("\r\n****** 即将进行文件写入测试... ******\r\n");
 
     res_flash = f_open(&file, "0:FatFs.txt",

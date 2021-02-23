@@ -336,9 +336,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--diag_suppress=111 --diag_suppress=188 --diag_suppress=870 --diag_suppress=3108</MiscControls>
-              <Define>USE_HAL_DRIVER,STM32H750xx,TFT96</Define>
+              <Define>USE_HAL_DRIVER,STM32H750xx,TFT96,ARM_MATH_CM7</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;  ../USB_DEVICE/App;  ../USB_DEVICE/Target;  ../Drivers/STM32H7xx_HAL_Driver/Inc;  ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;  ../Middlewares/ST/STM32_USB_Device_Library/Class/MSC/Inc;  ../Drivers/CMSIS/Device/ST/STM32H7xx/Include;  ../Drivers/CMSIS/Include;  ..\Drivers\BSP\ST7735;  ..\Middlewares\sfud\inc;  ..\Drivers\BSP\W25QXX;  ..\lvgl;  ..\lvgl\src;  ..\lvgl\src\lv_core;  ..\lvgl\src\lv_hal;  ..\lvgl\src\lv_misc;  ..\lvgl\src\lv_gpu;  ..\lvgl\src\lv_themes;  ..\lvgl\src\lv_font;  ..\lvgl\src\lv_draw;  ..\lvgl\src\lv_widgets;  ..\lvgl\docs;  ..\FatFs</IncludePath>
+              <IncludePath>../Core/Inc; ../USB_DEVICE/App; ../USB_DEVICE/Target; ../Drivers/STM32H7xx_HAL_Driver/Inc; ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy; ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc; ../Middlewares/ST/STM32_USB_Device_Library/Class/MSC/Inc; ../Drivers/CMSIS/Device/ST/STM32H7xx/Include; ../Drivers/CMSIS/Include; ..\Drivers\BSP\ST7735; ..\Middlewares\sfud\inc; ..\Drivers\BSP\W25QXX; ..\lvgl; ..\lvgl\src; ..\lvgl\src\lv_core; ..\lvgl\src\lv_hal; ..\lvgl\src\lv_misc; ..\lvgl\src\lv_gpu; ..\lvgl\src\lv_themes; ..\lvgl\src\lv_font; ..\lvgl\src\lv_draw; ..\lvgl\src\lv_widgets; ..\lvgl\docs; ..\FatFs; ..\DSP; ../Utilities/JPEG; ..\Drivers\BSP\SD_Card; ..\Drivers\BSP\decode_dma</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -406,6 +406,16 @@
               <FileName>gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>jpeg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/jpeg.c</FilePath>
+            </File>
+            <File>
+              <FileName>mdma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/mdma.c</FilePath>
             </File>
             <File>
               <FileName>rtc.c</FileName>
@@ -573,6 +583,11 @@
               <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c</FilePath>
             </File>
             <File>
+              <FileName>stm32h7xx_hal_jpeg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_jpeg.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32h7xx_hal_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rtc.c</FilePath>
@@ -685,7 +700,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Drivers/BSP/ST7735</GroupName>
+          <GroupName>Drivers/BSP</GroupName>
           <Files>
             <File>
               <FileName>lcd.c</FileName>
@@ -702,15 +717,20 @@
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\ST7735\st7735_reg.c</FilePath>
             </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Drivers/BSP/W25Qxx</GroupName>
-          <Files>
             <File>
               <FileName>w25qxx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\W25QXX\w25qxx.c</FilePath>
+            </File>
+            <File>
+              <FileName>SD_Card.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SD_Card\SD_Card.c</FilePath>
+            </File>
+            <File>
+              <FileName>decode_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\decode_dma\decode_dma.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1325,6 +1345,26 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>DSP</GroupName>
+          <Files>
+            <File>
+              <FileName>arm_cortexM7lfdp_math.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\DSP\arm_cortexM7lfdp_math.lib</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Utilities</GroupName>
+          <Files>
+            <File>
+              <FileName>jpeg_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Utilities/JPEG/jpeg_utils.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
@@ -1334,8 +1374,8 @@
   <RTE>
     <apis/>
     <components>
-      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.3.0" condition="ARMv6_7_8-M Device">
-        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.6.0"/>
+      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.4.0" condition="ARMv6_7_8-M Device">
+        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.7.0"/>
         <targetInfos>
           <targetInfo name="H7_Proj"/>
         </targetInfos>
