@@ -16,17 +16,11 @@ uint8_t workspace[4096],workspace0[4096];
 
 void test_sd(void)
 {
-	memset(WriteBuffer2,0x21,TEST_SIZE);
-	res_flash = f_mount(&fs0,SD_PATH,1);printf("RES:%d",res_flash);
-	res_flash = f_open(&file,"0:test.txt",FA_CREATE_ALWAYS | FA_WRITE);printf("RES:%d",res_flash);
-	res_flash = f_write(&file,WriteBuffer2,TEST_SIZE,&fnum);printf("RES:%d",res_flash);
-	f_close(&file);
-	res_flash = f_open(&file,"0:test.txt",FA_READ);printf("RES:%d",res_flash);
-	res_flash = f_read(&file,readbuffer2,TEST_SIZE,&fnum);printf("RES:%d",res_flash);
-	printf("%s",readbuffer2);
+	res_flash = f_open(&file,"1:myFont.bin",FA_READ);printf("RES:%d",res_flash);
+	printf("SIZE:%d",f_size(&file));
 	f_close(&file);
 }
-uint8_t image[14158];
+
 uint8_t image1[7339];
 #include "decode_dma.h"
 #include "lcd.h"
@@ -47,279 +41,8 @@ void test1(void)
 	f_close(&file);
 	f_unmount(FALSH_PATH);
 }
-//void HAL_JPEG_DecodeCpltCallback(JPEG_HandleTypeDef *hjpeg)
-//{
-//	HAL_GPIO_WritePin(E3_GPIO_Port,E3_Pin,GPIO_PIN_RESET);
-//	printf("HAL_JPEG_DecodeCpltCallback!\r\n");
-//}
 
-//void HAL_JPEG_ErrorCallback(JPEG_HandleTypeDef *hjpeg)
-//{
-//	HAL_JPEG_STATETypeDef jpeg_stat = HAL_JPEG_GetState(hjpeg);
-//	printf("encode error:%d\r\n",jpeg_stat);
-//}
-//void HAL_JPEG_GetDataCallback(JPEG_HandleTypeDef *hjpeg, uint32_t NbDecodedData)
-//{
-//	
-//}
-//void HAL_JPEG_DataReadyCallback(JPEG_HandleTypeDef *hjpeg, uint8_t *pDataOut, uint32_t OutDataLength)
-//{
-//	printf("HAL_JPEG_DataReadyCallback!\r\n");
-//}
-uint8_t jpeg_buffer[14158];
-void JPEG_Decode(void)
-{
-	res_flash = f_open(&file,"1:scen_img.JPG",FA_READ);printf("RES:%d",res_flash);
-	printf("size:%d",f_size(&file));
-	res_flash = f_read(&file,jpeg_buffer,14158,&fnum);printf("RES:%d",res_flash);
-	
-	f_close(&file);
-}
-//uint8_t* glyph_bitmap_1;
-//uint16_t* unicode_list_1_1;
-//lv_font_fmt_txt_glyph_dsc_t* glyph_dsc_1;
-//void Read_Font_From_FLASH(void)
-//{
-//	glyph_bitmap_1 = (uint8_t*) malloc(BITMAP_SIZE);
-//	unicode_list_1_1 = (uint16_t*)malloc(UNICODE_SIZE/sizeof(uint16_t));
-//	glyph_dsc_1 = (lv_font_fmt_txt_glyph_dsc_t*)malloc(DSC_SIZE/sizeof(lv_font_fmt_txt_glyph_dsc_t));
-//	
-//	
-//	res_flash = f_mount(&fs,FALSH_PATH,1);
-//	if(res_flash != FR_OK)
-//		printf("file system init error!!\n");
-//	else{
-//		//开始读取字体数据
-//		res_flash = f_open(&file,"1:my_Font_16/glyph_bitmap.bin",FA_READ);
-//		if(res_flash == FR_OK){
-//			printf("open:%d  ",res_flash);
-//			res_flash = f_read(&file,glyph_bitmap_1,f_size(&file),&fnum);
-//			printf("read:%d\n",res_flash);
-//		}
-//		else{
-//			printf("glyph_bitmap.bin read error!%d\n",res_flash);
-//		}
-//		f_close(&file);
-//		
-//		res_flash = f_open(&file,"1:my_Font_16/unicode_list_1.bin",FA_READ);
-//		if(res_flash == FR_OK){
-//			printf("open:%d  ",res_flash);
-//			res_flash = f_read(&file,unicode_list_1_1,f_size(&file),&fnum);
-//			printf("read:%d\n",res_flash);
-//		}
-//		else{
-//			printf("unicode_list_1.bin read error!%d\n",res_flash);
-//		}
-//		f_close(&file);
-//		
-//		res_flash = f_open(&file,"1:my_Font_16/glyph_dsc.bin",FA_READ);
-//		if(res_flash == FR_OK){
-//			printf("open:%d  ",res_flash);
-//			res_flash = f_read(&file,glyph_dsc_1,f_size(&file),&fnum);
-//			printf("read:%d\n",res_flash);
-//		}
-//		else{
-//			printf("glyph_dsc.bin read error!%d\n",res_flash);
-//		}
-//		f_close(&file);
-//	}
-//	f_unmount("0:");
-//}
 
-//void Font2FALSH(void)//字体烧到flash
-//{
-
-//	res_flash = f_mount(&fs,FALSH_PATH,1);
-//	
-//	if(res_flash != FR_OK)
-//		printf("file system init error!!\n");
-//	else{
-//		res_flash = f_mkdir("1:my_Font_16");
-//		printf("目录创建:%d\n",res_flash);
-//		 
-////		res_flash = f_unlink("1:my_Font_16/glyph_bitmap.bin");printf("删除1：%d",res_flash);
-////		res_flash = f_unlink("1:my_Font_16/unicode_list_1.bin");printf("删除2：%d",res_flash);
-////		res_flash = f_unlink("1:my_Font_16/glyph_dsc.bin");printf("删除3：%d",res_flash);
-//		//开始烧录glyph_bitmap.bin   
-//		res_flash = f_open(&file, "1:my_Font_16/glyph_bitmap.bin",FA_CREATE_ALWAYS | FA_WRITE );
-//		if(res_flash == FR_OK){
-//			res_flash = f_write(&file,glyph_bitmap,FONT_SIZE,&fnum);
-//			if(res_flash == FR_OK)
-//				printf("glyph_bitmap.bin write ok!%d,size:%d\n",res_flash,fnum);
-//			else{
-//				printf("glyph_bitmap.bin write error!%d\n",res_flash);
-//			}
-//		}
-//		else{
-//			printf("glyph_bitmap.bin create or open error!%d\n",res_flash);
-//		}
-//		f_close(&file);
-//		//开始烧录unicode_list_1.bin
-//		res_flash = f_open(&file, "1:my_Font_16/unicode_list_1.bin",FA_CREATE_ALWAYS | FA_WRITE );
-//		if(res_flash == FR_OK){
-//			res_flash = f_write(&file,unicode_list_1,UNICODE_SIZE,&fnum);
-//			if(res_flash == FR_OK)
-//				printf("unicode_list_1.bin write ok!%d,size:%d\n",res_flash,fnum);
-//			else{
-//				printf("unicode_list_1.bin write error!%d\n",res_flash);
-//			}
-//		}
-//		else{
-//			printf("unicode_list_1.bin create or open error!%d\n",res_flash);
-//		}
-//		f_close(&file);		
-//		//开始烧录glyph_dsc.bin
-//		res_flash = f_open(&file, "1:my_Font_16/glyph_dsc.bin",FA_CREATE_ALWAYS | FA_WRITE );
-//		if(res_flash == FR_OK){
-//			res_flash = f_write(&file,glyph_dsc,DSC_SIZE,&fnum);
-//			if(res_flash == FR_OK)
-//				printf("glyph_dsc.bin write ok!%d,size:%d\n",res_flash,fnum);
-//			else{
-//				printf("glyph_dsc.bin write error!%d\n",res_flash);
-//			}
-//		}
-//		else{
-//			printf("glyph_dsc.bin create or open error!%d\n",res_flash);
-//		}
-//		f_close(&file);	
-//	}
-//	f_unmount("0:");
-//}
-//void Read_Font_From_SD(void)
-//{
-//	glyph_bitmap_1 = (uint8_t*) malloc(BITMAP_SIZE);
-//	//unicode_list_1_1 = (uint16_t*)malloc(UNICODE_SIZE/sizeof(uint16_t));
-//	//glyph_dsc_1 = (lv_font_fmt_txt_glyph_dsc_t*)malloc(DSC_SIZE/sizeof(lv_font_fmt_txt_glyph_dsc_t));
-//	res_flash = f_mount(&fs0,"0:",1);
-//	if(res_flash != FR_OK)
-//		printf("file system init error!!\n");
-//	else{
-//		//开始读取字体数据
-//		res_flash = f_open(&file,"0:my_Font_16/glyph_bitmap.bin",FA_READ);
-//		if(res_flash != FR_OK)
-//			printf("glyph_bitmap.bin read error!%d\n",res_flash);
-//		else{
-//			printf("open:%d  ",res_flash);
-//			res_flash = f_read(&file,glyph_bitmap_1,f_size(&file),&fnum);
-//			printf("read:%d\n",res_flash);
-//		}
-//		f_close(&file);
-//		
-//		res_flash = f_open(&file,"0:my_Font_16/unicode_list_1.bin",FA_READ);
-//		if(res_flash != FR_OK)
-//			printf("unicode_list_1.bin read error!%d\n",res_flash);
-//		else{
-//			printf("open:%d  ",res_flash);
-//			res_flash = f_read(&file,unicode_list_1_1,f_size(&file),&fnum);
-//			printf("read:%d\n",res_flash);
-//		}
-//		f_close(&file);
-//		
-//		res_flash = f_open(&file,"0:my_Font_16/glyph_dsc.bin",FA_READ);
-//		if(res_flash != FR_OK)
-//			printf("glyph_dsc.bin read error!%d\n",res_flash);
-//		else{
-//			printf("open:%d  ",res_flash);
-//			res_flash = f_read(&file,glyph_dsc_1,f_size(&file),&fnum);
-//			printf("read:%d\n",res_flash);
-//		}
-//		f_close(&file);
-//	}
-////	scan_files("0:");
-//	f_mount(NULL,"0:",0);
-//}
-
-//void Font2SD(void)//字体烧到SD卡
-//{
-//	res_flash = f_mount(&fs0,"0:",1);
-//	
-//	if(res_flash != FR_OK)
-//		printf("file system init error!!\n");
-//	else{
-//		
-//		
-//		//开始烧录glyph_bitmap.bin    
-//		res_flash = f_open(&file, "0:my_Font_16/glyph_bitmap.bin",FA_CREATE_ALWAYS | FA_WRITE );
-//		if(res_flash != FR_OK)
-//			printf("glyph_bitmap.bin create or open error!\n");
-//		else{
-//			res_flash = f_write(&file,glyph_bitmap,FONT_SIZE,&fnum);
-//			if(res_flash != FR_OK)
-//				printf("glyph_bitmap.bin write error!\n");
-//			else{
-//				printf("glyph_bitmap.bin write ok!%d glyph_bitmap.bin size:%d\n",res_flash,fnum);
-//			}
-//		}
-//		f_close(&file);
-//		//开始烧录unicode_list_1.bin
-//		res_flash = f_open(&file, "0:my_Font_16/unicode_list_1.bin",FA_CREATE_ALWAYS | FA_WRITE );
-//		if(res_flash != FR_OK)
-//			printf("unicode_list_1.bin create or open error!\n");
-//		else{
-//			res_flash = f_write(&file,unicode_list_1,unicode_SIZE,&fnum);
-//			if(res_flash != FR_OK)
-//				printf("unicode_list_1.bin write error!\n");
-//			else{
-//				printf("unicode_list_1.bin write ok!%d unicode_list_1.bin size:%d\n",res_flash,fnum);
-//			}
-//		}
-//		f_close(&file);		
-//		//开始烧录glyph_dsc.bin
-//		res_flash = f_open(&file, "0:my_Font_16/glyph_dsc.bin",FA_CREATE_ALWAYS | FA_WRITE );
-//		if(res_flash != FR_OK)
-//			printf("glyph_dsc.bin create or open error!\n");
-//		else{
-//			res_flash = f_write(&file,glyph_dsc,glyph_dsc_SIZE,&fnum);
-//			if(res_flash != FR_OK)
-//				printf("glyph_dsc.bin write error!\n");
-//			else{
-//				printf("glyph_dsc.bin write ok!%d glyph_dsc.bin size:%d\n",res_flash,fnum);
-//			}
-//		}
-//		f_close(&file);	
-//	}
-//	f_mount(NULL,"0:",0);
-//}
-
-void SD_fatfs(void)
-{
-	res_flash = f_mount(&fs0,"0:",1);
-	if(res_flash == FR_NO_FILESYSTEM) {
-        printf("》SD卡还没有文件系统，即将进行格式化...\r\n");
-        res_flash=f_mkfs("0:",0,workspace0,4096);
-        if (res_flash == FR_OK) {
-            printf("》SD卡已成功格式化文件系统。\r\n");
-            res_flash = f_mount(NULL,"0:",0);
-            res_flash = f_mount(&fs0,"0:",0);
-        }else{
-            printf("SD卡格式化失败:%d\r\n",res_flash);
-        }
-    }else if(res_flash==FR_OK){
-        printf("外部SD卡挂载文件系统成功。(%d)\r\n",res_flash);
-    }else {
-		printf("error:%d",res_flash);
-	}
-
-    printf("\r\n****** 即将进行文件写入测试... ******\r\n");
-
-    res_flash = f_open(&file, "0:FatFs.txt",
-
-                       FA_CREATE_ALWAYS | FA_WRITE );
-
-    if ( res_flash == FR_OK ) {
-        printf("》打开/创建FatFs读写测试文件.txt文件成功，向文件写入数据。\r\n");
-        res_flash=f_write(&file,WriteBuffer,sizeof(WriteBuffer),&fnum);
-        if (res_flash==FR_OK) {
-            printf("》文件写入成功，写入字节数据：%d\n",fnum);
-            printf("》向文件写的数据为:\r\n%s\r\n",WriteBuffer);
-        } else {
-            printf("！！文件写入失败：(%d)\n",res_flash);
-        }
-        f_close(&file);
-    } else {
-        printf("！！打开/创建文件失败%x\r\n",res_flash);
-    }
-}
 void fatfs_test(void)
 {
 	memset(WriteBuffer2,0x21,TEST_SIZE);
@@ -363,8 +86,7 @@ FRESULT miscellaneous(void)
     FATFS *pfs;
     DWORD fre_clust, fre_sect, tot_sect;
 
-    printf("\n*************** 设备信息获取 ***************\r\n");
-    /* 获取设备信息和空簇大小 */
+    printf("\n***************Get flash info***************\r\n");
     res_flash = f_getfree("1:", &fre_clust, &pfs);
 
     /* 计算得到总的扇区个数和空扇区个数 */
@@ -373,7 +95,7 @@ FRESULT miscellaneous(void)
     /* 打印信息(4096 字节/扇区) */
     printf("》设备总空间：%10lu KB。\n》可用空间： %10lu KB。\n",
             tot_sect *4, fre_sect *4);
-    printf("\n******** 文件定位和格式化写入功能测试 ********\r\n");
+    printf("\n****************\r\n");
     res_flash = f_open(&fnew, "1:FatFs读写测试文件.txt",
                       FA_OPEN_EXISTING|FA_WRITE|FA_READ );
     if ( res_flash == FR_OK ) {
@@ -442,75 +164,22 @@ FRESULT file_check(void)
     return res_flash;
 }
 
-FRESULT scan_files (char* path)
+UINT scan_files (char* path)
 {
-    FRESULT res; //部分在递归过程被修改的变量，不用全局变量
-    FILINFO fno;
+    FRESULT res; 
+    FILINFO fno;//文件信息结构体
     DIR dir;
-    int i;
-    char *fn; // 文件名
+	UINT fnum = 0;
     res = f_opendir(&dir, path);
-    if (res == FR_OK) {
-        i = strlen(path);
-        for (;;) {
-            //读取目录下的内容，再读会自动读下一个文件
+    if(res == FR_OK)
+	{
+        while(1)
+		{
             res = f_readdir(&dir, &fno);
-            //为空时表示所有项目读取完毕，跳出
-            if (res != FR_OK || fno.fname[0] == 0) break;
-            #if _USE_LFN
-            fn = *fno.lfname ? fno.lfname : fno.fname;
-            #else
-            fn = fno.fname;
-            #endif
-            //点表示当前目录，跳过
-            if (*fn == '.') continue;
-            //目录，递归读取
-            if (fno.fattrib & AM_DIR) {
-                //合成完整目录名
-                sprintf(&path[i], "/%s", fn);
-                //递归遍历
-                res = scan_files(path);
-                path[i] = 0;
-                //打开失败，跳出循环
-                if (res != FR_OK)
-                    break;
-            } else {
-                printf("%s/%s\r\n", path, fn); //输出文件名
-                /* 可以在这里提取特定格式的文件路径 */
-            }//else
-        } //for
+            if(res != FR_OK || fno.fname[0] == 0) break;
+			fnum++;
+        } 
     }
-    return res;
-	f_unmount(FALSH_PATH);
+	return fnum;
 }
 
-
-void image2flash(uint8_t ofs, void* image,char* image_name)
-{
-    char file_name[15];
-    char path_image[15];
-    FRESULT res_flash;
-    FIL fil_image;
-    UINT fnum_image;
-    printf("\n********** 写入图片数据 **********\r\n");
-    sprintf(file_name,"%s.bin",image_name);
-    sprintf(path_image,"%d:%s.bin",ofs,image_name);
-    res_flash = f_open(&fil_image, path_image,FA_CREATE_ALWAYS | FA_WRITE );
-    if(res_flash == FR_OK){
-        printf("<%s> create success!writing...\n",file_name);
-        res_flash=f_write(&fil_image,image,40960,&fnum_image);
-        if(res_flash == FR_OK){
-            printf("<%s> write complete!!!\n",file_name);
-            printf("Number of bytes written:%d\n",fnum_image);
-        }
-        else printf("write failed,Maybe you've written it!\n");
-    }else{
-        printf("write or create file <%s> failed!\n",file_name);
-    }
-    f_close(&fil_image);
-
-}
-/*
-0100 0011 1010 1001
-0100 0010 0010 1001
-0100 0011 1010 1011*/

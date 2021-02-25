@@ -4,8 +4,11 @@
 #include "ov2640.h"
 #include "ov7725.h"
 #include "ov5640.h"
-
+#include "lcd.h"
+extern DCMI_HandleTypeDef hdcmi;
 Camera_HandleTypeDef hcamera;
+uint16_t pic[160][120];
+uint32_t DCMI_FrameIsReady;
 // Resolution table
 //----------------------------------------
 const uint16_t dvp_cam_resolution[][2] = {
@@ -46,6 +49,11 @@ const uint16_t dvp_cam_resolution[][2] = {
 	{1280, 960},  /* 960P      */
 	{2592, 1944}, /* 5MP       */
 };
+
+uint32_t Camera_On(void)
+{
+	HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t)&pic, 160 * 120 * 2 / 4);
+}
 
 int32_t Camera_WriteReg(Camera_HandleTypeDef *hov, uint8_t regAddr, const uint8_t *pData)
 {
@@ -151,84 +159,6 @@ void Camera_Reset(Camera_HandleTypeDef *hov)
 	HAL_Delay(100);
 }
 
-//void Camera_XCLK_Set(uint8_t xclktype)
-//{
-//#define USE_LCD 1
-
-//#if USE_LCD
-//#include "lcd.h"
-//#endif
-//	if (xclktype == XCLK_TIM)
-//	{
-//		TIM_OC_InitTypeDef sConfigOC = {0};
-//		GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-//		// DeInit TIM1 PWM OutPut
-//		HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8);
-//		HAL_TIM_PWM_DeInit(&htim1);
-
-//		// Init TIM1 Channel 1 12Mhz PWM Output
-//		htim1.Instance = TIM1;
-//		htim1.Init.Prescaler = 1 - 1;
-//		htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-//		htim1.Init.Period = 10 - 1;
-//		htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-//		htim1.Init.RepetitionCounter = 0;
-//		htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-//		if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
-//		{
-//			Error_Handler();
-//		}
-
-//		sConfigOC.OCMode = TIM_OCMODE_PWM1;
-//		sConfigOC.Pulse = 5;
-//		sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-//		sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-//		sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-//		sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-//		sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-//		if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-//		{
-//			Error_Handler();
-//		}
-
-//		__HAL_RCC_GPIOA_CLK_ENABLE();
-//		GPIO_InitStruct.Pin = GPIO_PIN_8;
-//		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-//		GPIO_InitStruct.Pull = GPIO_NOPULL;
-//		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-//		GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
-//		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-//		HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-
-//#if USE_LCD
-//		// Init 0.96''LCD Light Timer
-//		LCD_SoftPWMCtrlInit();
-//#endif
-//	}
-//	else
-//	{
-//#if USE_LCD
-//		// DeInit 0.96''LCD Light Timer
-//		LCD_SoftPWMCtrlDeInit();
-//#endif
-
-//		// DeInit TIM1 PWM OutPut
-//		HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8);
-//		HAL_TIM_PWM_DeInit(&htim1);
-
-//#if USE_LCD
-//		// Init TIM1 Channel 2N 10Khz PWM Output
-//		MX_TIM1_Init();
-//		LCD_SoftPWMEnable(0);
-//		HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
-//#endif
-
-//		// Init MCO1 PA8 12Mhz Output
-//		HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSI48, RCC_MCODIV_4);
-//	}
-//}
 
 void Camera_Init_Device(I2C_HandleTypeDef *hi2c, framesize_t framesize)
 {

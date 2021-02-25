@@ -19,6 +19,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dcmi.h"
+#include "dma.h"
+#include "i2c.h"
 #include "jpeg.h"
 #include "mdma.h"
 #include "rtc.h"
@@ -41,6 +44,8 @@
 #include "fatfs-demo.h"
 #include "arm_math.h"
 #include "SD_Card.h"
+#include "camera.h"
+#include "lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,6 +66,14 @@
 
 /* USER CODE BEGIN PV */
 
+//void Camera_Size_Disp(uint16_t width,uint16_t height)
+//{
+//	uint16_t Data[width][height];
+//	for(int i=0;i<width;i++)
+//		for(int j=0;j<height;j++)
+//			Data[i][j] = pic[j][i];
+//	ST7735_FillRGBRect(&st7735_pObj,0,0,(uint8_t*)&Data[0][0], width, height);
+//}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -166,6 +179,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_MDMA_Init();
   MX_RTC_Init();
   MX_SPI1_Init();
@@ -175,28 +189,17 @@ int main(void)
   MX_SDMMC1_SD_Init();
   MX_USART1_UART_Init();
   MX_JPEG_Init();
+  MX_DCMI_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-//	Font2SD();
-//  Read_Font_From_SD();
-//	Font2FALSH();
-//	Read_Font_From_FLASH();
-//	W25Qx_Init();
-//	printf("²Á³ý:%d\r\n",W25Qx_Erase_Chip());
-//	test_sd();
-
+	Camera_Init_Device(&hi2c1, FRAMESIZE_QQVGA);
 	lv_init();
 	lv_port_disp_init();
-//	lv_port_fs_init();
-//	lv_port_indev_init();
-//	lv_demo_benchmark();
-//	Font2SD();
-//	test();
-	test1();
-//  SD_fatfs();
-//    fatfs_test();
-//	miscellaneous();
-//	file_check();
-//	Get_SD_Info();
+	lv_port_fs_init();
+	lv_port_indev_init();
+	lv_demo_benchmark();
+	
+//	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -207,9 +210,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		
-//	lv_task_handler();
+	  
+//	if (DCMI_FrameIsReady)
+//    {
+//      DCMI_FrameIsReady = 0;
+//	  ST7735_FillRGBRect(&st7735_pObj,0,0,(uint8_t *)&pic[0][0], 160, 80);
+//	}		
+	  
+	  lv_task_handler();
+	  HAL_Delay(30);
   }
+  
   /* USER CODE END 3 */
 }
 
@@ -275,7 +286,8 @@ void SystemClock_Config(void)
   }
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
                               |RCC_PERIPHCLK_SPI4|RCC_PERIPHCLK_SPI1
-                              |RCC_PERIPHCLK_SDMMC|RCC_PERIPHCLK_USB;
+                              |RCC_PERIPHCLK_SDMMC|RCC_PERIPHCLK_I2C1
+                              |RCC_PERIPHCLK_USB;
   PeriphClkInitStruct.PLL3.PLL3M = 10;
   PeriphClkInitStruct.PLL3.PLL3N = 96;
   PeriphClkInitStruct.PLL3.PLL3P = 5;
@@ -288,6 +300,7 @@ void SystemClock_Config(void)
   PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
   PeriphClkInitStruct.Spi45ClockSelection = RCC_SPI45CLKSOURCE_D2PCLK1;
   PeriphClkInitStruct.Usart16ClockSelection = RCC_USART16CLKSOURCE_D2PCLK2;
+  PeriphClkInitStruct.I2c123ClockSelection = RCC_I2C123CLKSOURCE_D2PCLK1;
   PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLL3;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
@@ -301,7 +314,13 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
+{	
+//    DCMI_FrameIsReady = 1;
+//	HAL_DCMI_Stop(hdcmi);
+//	printf("image:%d,%d,%d,%d,%d\n",1,160*120,160,120,7);
+//	HAL_UART_Transmit(&huart1,(uint8_t*)pic,160*120,0xffff);	
+}
 /* USER CODE END 4 */
 
 /**

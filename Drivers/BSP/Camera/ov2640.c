@@ -497,7 +497,7 @@ int ov2640_init(framesize_t framesize)
 {
 	reset();
 	hcamera.framesize = framesize;
-	hcamera.pixformat = PIXFORMAT_JPEG;
+	hcamera.pixformat = PIXFORMAT_RGB565;
 	//set_framesize(FRAMESIZE_QQVGA);
 	set_pixformat(hcamera.pixformat);
 	set_hmirror(0);

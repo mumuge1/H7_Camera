@@ -13,7 +13,7 @@
 void test1(void);
 void fatfs_test(void);
 FRESULT miscellaneous(void);
-FRESULT scan_files (char* path);
+UINT scan_files(char* path);
 FRESULT file_check(void);
 void SD_fatfs(void);
 void Font2SD(void);
