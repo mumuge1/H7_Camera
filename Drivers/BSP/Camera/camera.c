@@ -50,10 +50,10 @@ const uint16_t dvp_cam_resolution[][2] = {
 	{2592, 1944}, /* 5MP       */
 };
 
-uint32_t Camera_On(void)
-{
-	HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t)&pic, 160 * 120 * 2 / 4);
-}
+//uint32_t Camera_On(void)
+//{
+//	HAL_DCMI_Start_DMA(&hdcmi, DCMI_MODE_CONTINUOUS, (uint32_t)&pic, 160 * 120 * 2 / 4);
+//}
 
 int32_t Camera_WriteReg(Camera_HandleTypeDef *hov, uint8_t regAddr, const uint8_t *pData)
 {

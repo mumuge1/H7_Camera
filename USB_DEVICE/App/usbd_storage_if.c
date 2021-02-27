@@ -69,7 +69,7 @@
 #define STORAGE_BLK_SIZ                  0x200
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
-#define STORAGE_LUN_NBR_MY               2
+#define STORAGE_LUN_NBR_MY               1
 #define SD_READ_TIMEOUT                  100U
 /* USER CODE END PRIVATE_DEFINES */
 

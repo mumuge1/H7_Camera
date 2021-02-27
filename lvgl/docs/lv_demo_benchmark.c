@@ -5,13 +5,27 @@
 #include "main.h"
 #include "usb_device.h"
 #include "camera.h"
-
+//按键输入设备声明
 extern lv_indev_t * indev_keypad;
-static void lv_demo_printer_anim_in(lv_obj_t * obj, uint32_t delay);
+//静态函数声明
+static void lv_anim_Start(lv_obj_t * obj, uint32_t delay,uint32_t way);
+//回调函数声明
 static void btn_cb(lv_obj_t * obj,lv_event_t event);
+//控件对象声明
 lv_task_t* task1 = NULL;
 lv_obj_t * img;
+lv_obj_t* img_label;
+//其他声明或定义
+char* app_img_path[APP_NUM] = {"1:APP/Picture.bin",
+						"1:APP/Camera.bin",
+						"1:APP/Settings.bin"};
+char* app_name[APP_NUM] = { "Picture",
+							"Camera",
+							"Settings"};
 extern USBD_HandleTypeDef hUsbDeviceFS;
+
+
+
 void task1_cb(lv_task_t* task)
 {
 	
@@ -28,23 +42,27 @@ void lv_demo_benchmark(void)
 {
     lv_theme_t * theme = lv_theme_material_init(LV_COLOR_MAKE(0xff,0,0),LV_COLOR_MAKE(0,0,0xff),0,
 		&lv_font_montserrat_14,&lv_font_montserrat_14,&lv_font_montserrat_14,&lv_font_montserrat_14);//创建主题
-    
     lv_theme_set_act(theme);
 
     lv_obj_t *scr = lv_scr_act();//获取当前活跃的屏幕对象
-
+	lv_obj_t* img_bg = lv_img_create(scr,NULL);
+	lv_img_set_src(img_bg,"1:image/img_bg1.bin");
 	
-	lv_style_t img_style;
+	
 	
 	img = lv_img_create(scr,NULL);
-	lv_img_set_src(img,"1:APP_Image/PhotoClub.bin");
-	lv_demo_printer_anim_in(img,50);
+	lv_img_set_src(img,app_img_path[0]);
+	lv_anim_Start(img,50,LEFT_TO_RIGHT);
 	lv_obj_align(img,scr,LV_ALIGN_IN_BOTTOM_MID,-20,-5);
+	
+	img_label = lv_label_create(scr,NULL);
+	lv_label_set_text(img_label,app_name[0]);
+	lv_obj_align(img_label,img,LV_ALIGN_OUT_RIGHT_BOTTOM,0,5);
+	lv_anim_Start(img_label,50,UP_TO_BOTTON);
 	
     lv_obj_t * btn = lv_btn_create(scr,NULL);
     lv_obj_set_size(btn, 20,20);
-
-    lv_obj_align(btn,scr,LV_ALIGN_IN_RIGHT_MID,0,0);
+    lv_obj_align(btn,img_label,LV_ALIGN_OUT_TOP_MID,0,-10);
     lv_obj_t *label_btn = lv_label_create(btn, NULL);
     lv_label_set_text(label_btn,LV_SYMBOL_RIGHT);
     lv_obj_set_event_cb(btn,btn_cb);
@@ -72,24 +90,37 @@ static void btn_cb(lv_obj_t * obj,lv_event_t event)
 	static int i = 0;
     if(event == LV_EVENT_CLICKED)
     {
-		lv_obj_fade_out(img,500,50);
-		lv_img_set_src(img,"1:APP_Image/Camera.bin");
-		lv_demo_printer_anim_in(img,50);
+		if(i == APP_NUM-1) i=-1;
+		lv_img_set_src(img,app_img_path[++i]);
+		lv_label_set_text(img_label,app_name[i]);
+		lv_anim_Start(img,50,LEFT_TO_RIGHT);
+		lv_anim_Start(img_label,50,UP_TO_BOTTON);
     }
 
 }
-static void lv_demo_printer_anim_in(lv_obj_t * obj, uint32_t delay)
+static void lv_anim_Start(lv_obj_t * obj, uint32_t delay,uint32_t way)
 {
+	lv_obj_fade_out(obj,500,50);
     if (obj != lv_scr_act()) {
+		
         lv_anim_t a;
         lv_anim_init(&a);
         lv_anim_set_var(&a, obj);
         lv_anim_set_time(&a, 150);
         lv_anim_set_delay(&a, delay);
-        lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t) lv_obj_set_x);
-        lv_anim_set_values(&a, 0,lv_obj_get_x(obj));
+		if(way == UP_TO_BOTTON)
+		{
+			lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t) lv_obj_set_y);
+			lv_anim_set_values(&a, lv_obj_get_y(obj)-25,lv_obj_get_y(obj));		
+		}
+		else if(way == LEFT_TO_RIGHT)
+		{
+			lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t) lv_obj_set_x);
+			lv_anim_set_values(&a, 0,lv_obj_get_x(obj));
+		}
         lv_anim_start(&a);
 
         lv_obj_fade_in(obj,300, delay);
     }
 }
+

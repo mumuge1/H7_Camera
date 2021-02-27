@@ -9,13 +9,10 @@ extern "C" {
 #include "lvgl.h"
 void lv_demo_benchmark(void);
 
+#define UP_TO_BOTTON  0
+#define LEFT_TO_RIGHT 1
 
-struct {
-	lv_obj_t* current;//指向
-	lv_obj_t* previous;
-	lv_obj_t* next;
-}APP_t;
-
+#define APP_NUM 3
 
 #ifdef __cplusplus
 } /* extern "C" */
