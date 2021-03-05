@@ -16,9 +16,9 @@ lv_task_t* task1 = NULL;
 lv_obj_t * img;
 lv_obj_t* img_label;
 //其他声明或定义
-char* app_img_path[APP_NUM] = {"1:APP/Picture.bin",
-						"1:APP/Camera.bin",
-						"1:APP/Settings.bin"};
+char* app_img_path[APP_NUM] = { "1:APP/Picture.bin",
+								"1:APP/Camera.bin",
+								"1:APP/Settings.bin"};
 char* app_name[APP_NUM] = { "Picture",
 							"Camera",
 							"Settings"};
@@ -37,11 +37,15 @@ void task1_cb(lv_task_t* task)
 			HAL_GPIO_WritePin(E3_GPIO_Port,E3_Pin,GPIO_PIN_SET);
 	}
 }
-
+extern lv_font_t myfont;
 void lv_demo_benchmark(void)
 {
+//	lv_font_t* myfont = lv_font_load("1:font_3.fnt");
+	
     lv_theme_t * theme = lv_theme_material_init(LV_COLOR_MAKE(0xff,0,0),LV_COLOR_MAKE(0,0,0xff),0,
 		&lv_font_montserrat_14,&lv_font_montserrat_14,&lv_font_montserrat_14,&lv_font_montserrat_14);//创建主题
+//    lv_theme_t * theme = lv_theme_material_init(LV_COLOR_MAKE(0xff,0,0),LV_COLOR_MAKE(0,0,0xff),0,
+//		&myfont,&myfont,&myfont,&myfont);//创建主题
     lv_theme_set_act(theme);
 
     lv_obj_t *scr = lv_scr_act();//获取当前活跃的屏幕对象
@@ -61,7 +65,7 @@ void lv_demo_benchmark(void)
 	lv_anim_Start(img_label,50,UP_TO_BOTTON);
 	
     lv_obj_t * btn = lv_btn_create(scr,NULL);
-    lv_obj_set_size(btn, 20,20);
+    lv_obj_set_size(btn, 50,50);
     lv_obj_align(btn,img_label,LV_ALIGN_OUT_TOP_MID,0,-10);
     lv_obj_t *label_btn = lv_label_create(btn, NULL);
     lv_label_set_text(label_btn,LV_SYMBOL_RIGHT);
@@ -86,17 +90,19 @@ void lv_demo_benchmark(void)
 
 static void btn_cb(lv_obj_t * obj,lv_event_t event)
 {
-	static char img_path[20];
 	static int i = 0;
     if(event == LV_EVENT_CLICKED)
-    {
+	{
 		if(i == APP_NUM-1) i=-1;
+		
 		lv_img_set_src(img,app_img_path[++i]);
 		lv_label_set_text(img_label,app_name[i]);
 		lv_anim_Start(img,50,LEFT_TO_RIGHT);
-		lv_anim_Start(img_label,50,UP_TO_BOTTON);
-    }
-
+		lv_anim_Start(img_label,50,UP_TO_BOTTON);		
+	}else if(event == LV_EVENT_LONG_PRESSED)
+	{
+		printf("00000");
+	}
 }
 static void lv_anim_Start(lv_obj_t * obj, uint32_t delay,uint32_t way)
 {
@@ -119,8 +125,8 @@ static void lv_anim_Start(lv_obj_t * obj, uint32_t delay,uint32_t way)
 			lv_anim_set_values(&a, 0,lv_obj_get_x(obj));
 		}
         lv_anim_start(&a);
-
-        lv_obj_fade_in(obj,300, delay);
+		
+		lv_obj_fade_in(obj,300, delay);
     }
 }
 

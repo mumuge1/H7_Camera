@@ -1332,6 +1332,11 @@
               <FileType>1</FileType>
               <FilePath>..\lvgl\docs\lv_demo_benchmark.c</FilePath>
             </File>
+            <File>
+              <FileName>myFont.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lvgl\myFont.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
